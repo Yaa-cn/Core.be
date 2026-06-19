@@ -1,20 +1,24 @@
 import mongoose from "mongoose"
+import slugify from "slugify"
 
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     slug: {
         type: String,
-        unique: true
+        unique: true,
+        required: true
     },
     image: {
         type: String,
         required: true
     },
     description: {
-        type: String
+        type: String,
+        required: true
     },
     price: {
         type: Number,
@@ -39,7 +43,7 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 0,
         min: 0,
-        max: 5 
+        max: 5
     },
     isFeatured: {
         type: Boolean,
@@ -49,6 +53,13 @@ const productSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+})
+
+productSchema.pre("save", function (next) {
+    if (this.isModified("name")) {
+        this.slug = slugify(this.name, { lower: true, strict: true })
+    }
+    next()
 })
 
 const Product = mongoose.model("Product", productSchema)

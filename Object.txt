@@ -1,0 +1,14 @@
+{
+  _id: ,
+  name:,
+  slug: ,
+  category: ,
+  price: ,
+  discount:,
+  stock: ,
+  rating: ,
+  image: ,
+  description: ,
+  isFeatured: ,
+  createdAt:
+}
