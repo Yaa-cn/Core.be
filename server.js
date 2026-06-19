@@ -10,6 +10,8 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
 
+app.set("trust proxy", 1)
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
