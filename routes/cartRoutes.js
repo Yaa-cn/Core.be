@@ -11,10 +11,10 @@ router.get("/cart", auth, async (req, res) => {
         const cart = await Cart.findOne({ user }).populate("items.product")
 
         if (!cart) {
-            cart = new Cart({ user, items: [] });
+            return res.status(200).json({ success: true, message: 'Your cart is empty !', cart: { user, items: [] } })
         }
 
-        res.status(200).json(cart)
+        res.status(200).json({ success: true, cart })
 
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -29,7 +29,7 @@ router.post("/cart/merge", auth, async (req, res) => {
         let cart = await Cart.findOne({ user })
 
         if (!cart) {
-            cart = new Cart({ user, items: [] });
+            cart = new Cart({ user, items: [] })
         }
 
         cartItems.forEach(newItem => {
@@ -44,8 +44,9 @@ router.post("/cart/merge", auth, async (req, res) => {
             }
         })
 
-        await cart.save();
-        return res.status(cart.isNew ? 201 : 200).json({
+        await cart.save()
+
+        res.status(cart.isNew ? 201 : 200).json({
             message: cart.isNew ? "Cart created and merged successfully!" : "Cart merged successfully!",
             cart
         })
@@ -59,14 +60,12 @@ router.post("/cart/merge", auth, async (req, res) => {
 router.post("/cart", auth, async (req, res) => {
     try {
         const { product, quantity } = req.body
-
         const user = req.session.userId
 
         let cart = await Cart.findOne({ user })
 
         if (!cart) {
             cart = new Cart({ user, items: [] })
-            await cart.save()
         }
 
         const existProduct = cart.items.some(item => item.product.equals(product._id))
@@ -88,7 +87,6 @@ router.patch("/cart/:product", auth, async (req, res) => {
     try {
         const { product } = req.params
         const { action } = req.body
-
         const user = req.session.userId
 
         let cart = await Cart.findOne({ user })
@@ -119,7 +117,6 @@ router.patch("/cart/:product", auth, async (req, res) => {
 router.delete("/cart/:product", auth, async (req, res) => {
     try {
         const { product } = req.params
-
         const user = req.session.userId
 
         let cart = await Cart.findOne({ user })
